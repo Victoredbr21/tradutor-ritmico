@@ -14,7 +14,7 @@
   --font-mono:'JetBrains Mono',monospace;
 }
 
-/* dark (default for a music tool) */
+/* dark (default) */
 :root,[data-theme="dark"]{
   --bg:       #0f0f0d;
   --surface:  #181714;
@@ -33,6 +33,7 @@
   --up-dim:   rgba(96,165,250,0.15);
   --mute:     #a78bfa;
   --mute-dim: rgba(167,139,250,0.15);
+  --muted:    #4a4845;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.4);
   --shadow-md:0 4px 16px rgba(0,0,0,0.5);
   --shadow-lg:0 12px 40px rgba(0,0,0,0.6);
@@ -55,6 +56,7 @@
   --up-dim:   rgba(37,99,235,0.12);
   --mute:     #7c3aed;
   --mute-dim: rgba(124,58,237,0.12);
+  --muted:    #b0ada8;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.08);
   --shadow-md:0 4px 16px rgba(0,0,0,0.1);
   --shadow-lg:0 12px 40px rgba(0,0,0,0.12);
@@ -69,12 +71,12 @@ body{
   line-height:1.5;overflow-x:hidden;
 }
 button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
-input,select{font:inherit;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-sm)}
 
 /* ── LAYOUT ─────────────────────────────────────────────── */
 .app{
-  max-width:480px;margin-inline:auto;
+  max-width:520px;margin-inline:auto;
   padding:var(--space-4);
   display:flex;flex-direction:column;gap:var(--space-4);
   min-height:100dvh;
@@ -97,6 +99,23 @@ input,select{font:inherit;color:inherit}
 }
 .theme-btn:hover{background:var(--surface-3);color:var(--text)}
 .theme-btn:active{transform:scale(0.92)}
+
+/* ── MAIN NAV ───────────────────────────────────────────── */
+.main-nav{
+  display:flex;gap:var(--space-2);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-xl);padding:var(--space-1);
+}
+.main-tab{
+  flex:1;padding:var(--space-2) var(--space-3);border-radius:var(--radius-lg);
+  font-size:var(--text-sm);font-weight:600;color:var(--text-muted);
+  display:flex;align-items:center;justify-content:center;gap:var(--space-1);
+  transition:all var(--transition);
+}
+.main-tab:hover{color:var(--text);background:var(--surface-2)}
+.main-tab.active{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-dim)}
+.main-tab:active{transform:scale(0.96)}
+.main-panel.hidden{display:none}
 
 /* ── CARDS ──────────────────────────────────────────────── */
 .card{
@@ -194,8 +213,6 @@ input,select{font:inherit;color:inherit}
 .beat-del:hover{background:#ff4444;border-color:#ff4444;color:#fff}
 .beat-del:active{transform:scale(0.9)}
 .beats-container{margin-bottom:var(--space-3)}
-
-/* strum controls */
 .strum-panel{display:flex;gap:var(--space-2);margin-bottom:var(--space-3)}
 .strum-btn{
   flex:1;height:52px;border-radius:var(--radius-lg);
@@ -208,7 +225,6 @@ input,select{font:inherit;color:inherit}
 .strum-btn.btn-up  {background:var(--up-dim);  border-color:var(--up);  color:var(--up)}
 .strum-btn.btn-mute{background:var(--mute-dim);border-color:var(--mute);color:var(--mute)}
 .strum-btn:active{transform:scale(0.94)}
-
 .beat-controls{display:flex;gap:var(--space-2)}
 .beat-ctrl-btn{
   flex:1;padding:var(--space-2);border-radius:var(--radius-md);
@@ -219,7 +235,7 @@ input,select{font:inherit;color:inherit}
 .beat-ctrl-btn:hover{background:var(--surface-3);color:var(--text)}
 .beat-ctrl-btn:active{transform:scale(0.95)}
 
-/* ── TABS ───────────────────────────────────────────────── */
+/* ── TABS (construtor) ──────────────────────────────────── */
 .tabs{display:flex;gap:var(--space-2)}
 .tab{
   flex:1;padding:var(--space-2) var(--space-3);border-radius:var(--radius-lg);
@@ -251,7 +267,7 @@ input,select{font:inherit;color:inherit}
   font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3);
   line-height:1.6;
 }
-.manual-hint code{
+.manual-hint code,.script-syntax-hint code{
   background:var(--surface-2);padding:1px 5px;border-radius:var(--radius-sm);
   font-family:var(--font-mono);color:var(--accent);
 }
@@ -264,17 +280,14 @@ input,select{font:inherit;color:inherit}
   color:var(--accent);margin-bottom:var(--space-2);
 }
 .res-visual{
-  font-size:1.6rem;letter-spacing:0.05em;
+  font-size:1.4rem;letter-spacing:0.05em;
   margin-bottom:var(--space-3);line-height:1.8;
-  display:flex;flex-wrap:wrap;gap:var(--space-1);align-items:center;
+  display:flex;flex-wrap:wrap;gap:4px;align-items:center;
 }
-.vis-down{color:var(--down)}
-.vis-up  {color:var(--up)}
-.vis-mute{color:var(--mute)}
-.vis-div {
-  color:var(--text-faint);font-size:0.9rem;
-  margin-inline:var(--space-1);
-}
+.vis-down{color:var(--down);display:inline-flex;align-items:center}
+.vis-up  {color:var(--up);  display:inline-flex;align-items:center}
+.vis-mute{color:var(--mute);display:inline-flex;align-items:center}
+.vis-div {color:var(--text-faint);font-size:0.9rem;margin-inline:var(--space-1)}
 .res-meta{
   font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-mono);
   margin-bottom:var(--space-3);display:flex;flex-wrap:wrap;gap:var(--space-3);
@@ -283,7 +296,7 @@ input,select{font:inherit;color:inherit}
   background:var(--surface-2);padding:3px 8px;
   border-radius:var(--radius-full);border:1px solid var(--border);
 }
-.res-notas{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.res-notas{display:flex;flex-direction:column;gap:var(--space-2)}
 .nota-chip{
   padding:var(--space-2) var(--space-3);border-radius:var(--radius-lg);
   background:var(--surface-2);border:1px solid var(--border);
@@ -291,6 +304,93 @@ input,select{font:inherit;color:inherit}
   color:var(--text-muted);
 }
 .nota-chip.destaque{background:var(--accent-dim);border-color:var(--accent);color:var(--text)}
+
+/* ── SCRIPTS PANEL ──────────────────────────────────────── */
+.song-library{display:flex;flex-direction:column;gap:var(--space-2)}
+.song-card{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--space-3) var(--space-4);
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);transition:all var(--transition);
+  cursor:pointer;gap:var(--space-3);
+}
+.song-card:hover{background:var(--surface-3);border-color:var(--accent-dim)}
+.song-card:active{transform:scale(0.98)}
+.song-card.active{background:var(--accent-dim);border-color:var(--accent)}
+.song-card-info{flex:1;min-width:0}
+.song-card-title{font-size:var(--text-sm);font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-card-meta{font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-mono)}
+.song-card-actions{display:flex;gap:var(--space-2);flex-shrink:0}
+.song-action-btn{
+  width:30px;height:30px;border-radius:var(--radius-md);
+  background:var(--surface-3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);transition:all var(--transition);
+}
+.song-action-btn:hover{color:var(--text);background:var(--surface);border-color:var(--accent-dim)}
+
+/* Script editor */
+.script-editor{
+  width:100%;min-height:260px;resize:vertical;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);
+  font-family:var(--font-mono);font-size:var(--text-sm);
+  color:var(--text);outline:none;line-height:1.7;
+  transition:border-color var(--transition);
+}
+.script-editor:focus{border-color:var(--accent);background:var(--surface)}
+.script-syntax-hint{
+  font-size:var(--text-xs);color:var(--text-muted);line-height:1.8;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:var(--space-3);
+  margin-bottom:var(--space-3);
+}
+.script-syntax-hint strong{color:var(--text-muted)}
+
+/* Script view */
+.song-view-title{font-size:var(--text-base);font-weight:700;color:var(--text)}
+.song-view-artist{font-size:var(--text-xs);color:var(--text-muted)}
+.script-rendered{display:flex;flex-direction:column;gap:var(--space-4)}
+
+/* Seção */
+.sr-section-title{
+  font-size:var(--text-xs);font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--accent);font-family:var(--font-mono);
+  padding:var(--space-1) var(--space-3);
+  background:var(--accent-dim);border-radius:var(--radius-full);
+  display:inline-block;margin-bottom:var(--space-2);
+}
+.sr-separator{border:none;border-top:1px solid var(--border);margin:var(--space-2) 0}
+/* Bloco de acorde+letra+ritmo */
+.sr-block{
+  display:flex;flex-direction:column;gap:4px;
+  padding:var(--space-2) var(--space-3);
+  background:var(--surface-2);border-radius:var(--radius-lg);
+  border-left:3px solid var(--accent-dim);
+  transition:border-color var(--transition);
+}
+.sr-block:hover{border-left-color:var(--accent)}
+.sr-chord{
+  font-family:var(--font-mono);font-size:var(--text-sm);font-weight:700;
+  color:var(--accent);
+}
+.sr-lyric{
+  font-size:var(--text-base);color:var(--text);line-height:1.4;
+  font-style:italic;
+}
+.sr-rhythm{
+  display:flex;flex-wrap:wrap;gap:4px;align-items:center;
+  padding-top:4px;border-top:1px solid var(--border);
+}
+.sr-strum-down{color:var(--down);display:inline-flex;align-items:center}
+.sr-strum-up  {color:var(--up);  display:inline-flex;align-items:center}
+.sr-strum-mute{color:var(--mute);display:inline-flex;align-items:center}
+.sr-div       {color:var(--text-faint);font-size:0.8rem;margin-inline:2px}
+.sr-nota{
+  font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-muted);
+  background:var(--surface-3);padding:2px 6px;border-radius:var(--radius-full);
+}
+.sr-empty{color:var(--text-faint);font-style:italic;font-size:var(--text-sm)}
 
 /* ── TABELA DE FIGURAS ──────────────────────────────────── */
 .fig-table{width:100%;border-collapse:collapse}
@@ -306,7 +406,7 @@ input,select{font:inherit;color:inherit}
 .fig-nome{font-weight:600;color:var(--text);font-size:var(--text-sm)}
 .fig-dur{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-muted)}
 
-/* ── THEME TOGGLE ───────────────────────────────────────── */
+/* ── SYSTEM PREF ────────────────────────────────────────── */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
     --bg:#f7f5f0;--surface:#ffffff;--surface-2:#f3f1ec;--surface-3:#ebe8e2;
@@ -315,7 +415,7 @@ input,select{font:inherit;color:inherit}
     --accent-dim:rgba(234,104,0,0.12);--down:#16a34a;
     --down-dim:rgba(22,163,74,0.12);--up:#2563eb;
     --up-dim:rgba(37,99,235,0.12);--mute:#7c3aed;
-    --mute-dim:rgba(124,58,237,0.12);
+    --mute-dim:rgba(124,58,237,0.12);--muted:#b0ada8;
     --shadow-sm:0 1px 3px rgba(0,0,0,0.08);
     --shadow-md:0 4px 16px rgba(0,0,0,0.1);
     --shadow-lg:0 12px 40px rgba(0,0,0,0.12);
