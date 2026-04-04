@@ -92,7 +92,13 @@ function clearBeats() {
   renderBeats();
 }
 
-const STRUM_ICON = { down:'⬇️', up:'⬆️', mute:'✋', '':'·' };
+// SVG inline para garantir renderização cross-platform dos ícones de strum
+const STRUM_ICON = {
+  down: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>`,
+  up:   `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
+  mute: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>`,
+  '':   `<span style="color:var(--muted)">·</span>`
+};
 
 function renderBeats() {
   const c = document.getElementById('beatsContainer');
@@ -111,14 +117,14 @@ function renderBeats() {
       const slot = document.createElement('button');
       slot.className = 'beat-slot ' + (s || 'empty');
       slot.setAttribute('aria-label', s ? s + ' strum' : 'slot vazio');
-      slot.textContent = STRUM_ICON[s] || '·';
+      slot.innerHTML = STRUM_ICON[s] || STRUM_ICON[''];
       if (s) slot.addEventListener('click', () => cycleSlot(bi, si));
       slots.appendChild(slot);
     });
     row.appendChild(slots);
     const del = document.createElement('button');
     del.className = 'beat-del';
-    del.textContent = '×';
+    del.textContent = '\u00D7';
     del.setAttribute('aria-label', 'Deletar beat ' + (bi + 1));
     del.addEventListener('click', () => deleteBeat(bi));
     row.appendChild(del);
@@ -166,7 +172,7 @@ function traduzirRitmo(ritmoAscii) {
     const isDown = ritmoAscii.includes('v');
     const totalMs = Math.round(4 * 60000 / bpm);
     showResultado(acorde, [{ type: isDown ? 'down' : 'up' }], [], '4/4', totalMs, 4, [
-      { sym: '𝅝', nome: 'Semibreve', dur: '4 tempos' }
+      { sym: 'semibreve', nome: 'Semibreve', dur: '4 tempos' }
     ]);
     return;
   }
@@ -195,16 +201,27 @@ function inferirCompasso(nBeats) {
   return map[nBeats] || (nBeats + '/4');
 }
 
+// Símbolos como texto legível — sem depender de Unicode de música
+const NOTA_SYMS = {
+  semibreve:    { label: '𝅝',    fallback: '[o]'     },
+  pausa:        { label: '\u{1D13B}', fallback: '[-]' },
+  seminima:     { label: '♩',    fallback: '[♩]'      },
+  colcheia2:    { label: '\u{1D158}\u{1D165}\u{1D158}\u{1D165}', fallback: '[\u266A\u266A]' },
+  tercina:      { label: '\u{1D158}\u{1D165}\u{1D158}\u{1D165}\u{1D158}\u{1D165}(3)', fallback: '[\u266A\u266A\u266A](3)' },
+  semicolcheia: { label: '\u{1D159}\u{1D166}', fallback: '[\u266B]' },
+  fusa:         { label: '\u{1D170}', fallback: '[\u266C]' }
+};
+
 function traduzirBloco(b) {
-  if (b.match(/^-+$/) && b.length >= 4) return { sym: '𝅝', nome: 'Semibreve', dur: '4 tempos' };
+  if (b.match(/^-+$/) && b.length >= 4) return { sym: '∅', nome: 'Semibreve', dur: '4 tempos' };
   const count = (b.match(/[v^]/g) || []).length;
   const pauseOnly = count === 0;
-  if (pauseOnly) return { sym: '𝄽', nome: 'Pausa', dur: '1 tempo' };
+  if (pauseOnly) return { sym: '—', nome: 'Pausa', dur: '1 tempo' };
   if (count === 1) return { sym: '♩', nome: 'Semínima', dur: '1 tempo' };
-  if (count === 2) return { sym: '𝅘𝅥𝅘𝅥', nome: 'Colcheias', dur: '½ tempo cada' };
-  if (count === 3) return { sym: '𝅘𝅥𝅘𝅥𝅘𝅥(3)', nome: 'Tercina', dur: '⅓ tempo cada' };
-  if (count === 4) return { sym: '𝅙𝅦𝅙𝅦𝅙𝅦𝅙𝅦', nome: 'Semicolcheias', dur: '¼ tempo cada' };
-  return { sym: '𝅰'.repeat(count), nome: 'Fusa(s)', dur: '⅛ tempo cada' };
+  if (count === 2) return { sym: '\u266A\u266A', nome: 'Colcheias', dur: '\u00BD tempo cada' };
+  if (count === 3) return { sym: '\u266A\u266A\u266A(3)', nome: 'Tercina', dur: '\u2153 tempo cada' };
+  if (count === 4) return { sym: '\u266B\u266B', nome: 'Semicolcheias', dur: '\u00BC tempo cada' };
+  return { sym: '\u266B'.repeat(Math.ceil(count / 2)), nome: 'Fusa(s)', dur: '\u215B tempo cada' };
 }
 
 function showResultado(acorde, visualStrums, blocos, compasso, totalMs, nBeats, notas) {
@@ -217,11 +234,14 @@ function showResultado(acorde, visualStrums, blocos, compasso, totalMs, nBeats, 
     if (s.type === 'div') {
       span.className = 'vis-div'; span.textContent = '|';
     } else if (s.type === 'down') {
-      span.className = 'vis-down'; span.textContent = '⬇️';
+      span.className = 'vis-down';
+      span.innerHTML = STRUM_ICON.down;
     } else if (s.type === 'up') {
-      span.className = 'vis-up'; span.textContent = '⬆️';
+      span.className = 'vis-up';
+      span.innerHTML = STRUM_ICON.up;
     } else {
-      span.className = 'vis-mute'; span.textContent = '✋';
+      span.className = 'vis-mute';
+      span.innerHTML = STRUM_ICON.mute;
     }
     visEl.appendChild(span);
   });
@@ -239,7 +259,7 @@ function showResultado(acorde, visualStrums, blocos, compasso, totalMs, nBeats, 
   notas.forEach((n, i) => {
     const chip = document.createElement('div');
     chip.className = 'nota-chip' + (i === 0 ? ' destaque' : '');
-    chip.textContent = `Beat ${i+1}: ${n.sym} ${n.nome} — ${n.dur}`;
+    chip.textContent = `Beat ${i+1}: ${n.sym} ${n.nome} \u2014 ${n.dur}`;
     notasEl.appendChild(chip);
   });
 

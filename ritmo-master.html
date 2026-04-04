@@ -8,6 +8,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<!-- Bravura Web Font para símbolos musicais reais -->
+<style>
+  @font-face {
+    font-family: 'Bravura';
+    src: url('https://cdn.jsdelivr.net/npm/bravura@1.3.0/redist/bravura.woff2') format('woff2'),
+         url('https://cdn.jsdelivr.net/npm/bravura@1.3.0/redist/bravura.woff') format('woff');
+    font-display: swap;
+  }
+  .fig-sym {
+    font-family: 'Bravura', 'Segoe UI Emoji', 'Noto Music', serif;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  /* fallback SVG-based music symbols via CSS content */
+  .fig-sym-text {
+    font-family: 'Bravura', 'Segoe UI Emoji', serif;
+    font-size: 1.4rem;
+  }
+</style>
 </head>
 <body>
 
@@ -92,15 +111,15 @@
 
     <div class="strum-panel">
       <button class="strum-btn btn-down" onclick="addStrum('down')" aria-label="Adicionar palhetada para baixo">
-        <span style="font-size:1.6rem">&#8595;</span>
+        <span style="font-size:1.6rem" aria-hidden="true">&#8595;</span>
         <span class="label">BAIXO</span>
       </button>
       <button class="strum-btn btn-up" onclick="addStrum('up')" aria-label="Adicionar palhetada para cima">
-        <span style="font-size:1.6rem">&#8593;</span>
+        <span style="font-size:1.6rem" aria-hidden="true">&#8593;</span>
         <span class="label">CIMA</span>
       </button>
       <button class="strum-btn btn-mute" onclick="addStrum('mute')" aria-label="Adicionar pausa">
-        <span style="font-size:1.4rem">&#9995;</span>
+        <span style="font-size:1.4rem" aria-hidden="true">&#9995;&#65039;</span>
         <span class="label">PAUSA</span>
       </button>
     </div>
@@ -130,7 +149,7 @@
       <input type="text" class="acorde-input" id="manualInput" placeholder="Ex: v|v^|^v|v" style="font-size:var(--text-base)" aria-label="Entrada manual do ritmo">
       <button class="beat-ctrl-btn" style="flex:none;padding:var(--space-2) var(--space-4)" onclick="traduzirManual()">OK</button>
     </div>
-    <div class="manual-hint">Ou só <code>v</code> = semibreve (compasso inteiro 🍩)</div>
+    <div class="manual-hint">Ou só <code>v</code> = semibreve (compasso inteiro &#127849;)</div>
   </section>
 
   <!-- RESULTADO -->
@@ -147,21 +166,151 @@
     <p class="card-title">Figuras Musicais</p>
     <table class="fig-table">
       <thead>
-        <tr><th>Figura</th><th>Pausa</th><th>Nome</th><th>Duração</th></tr>
+        <tr><th>Figura</th><th>Pausa</th><th>Nome</th><th>Dura&ccedil;&atilde;o</th></tr>
       </thead>
       <tbody>
-        <tr><td class="fig-sym">𝅝</td><td class="fig-sym fig-pause">𝄻</td><td class="fig-nome">Semibreve</td><td class="fig-dur">4 tempos</td></tr>
-        <tr><td class="fig-sym">𝅗𝅥</td><td class="fig-sym fig-pause">𝄼</td><td class="fig-nome">Mínima</td><td class="fig-dur">2 tempos</td></tr>
-        <tr><td class="fig-sym">♩</td><td class="fig-sym fig-pause">𝄽</td><td class="fig-nome">Semínima</td><td class="fig-dur">1 tempo</td></tr>
-        <tr><td class="fig-sym">𝅘𝅥</td><td class="fig-sym fig-pause">𝄾</td><td class="fig-nome">Colcheia</td><td class="fig-dur">½ tempo</td></tr>
-        <tr><td class="fig-sym">𝅘𝅥𝅘𝅥𝅘𝅥(3)</td><td class="fig-sym fig-pause">𝄾𝄾𝄾(3)</td><td class="fig-nome">Tercina</td><td class="fig-dur">⅓ tempo</td></tr>
-        <tr><td class="fig-sym">𝅙𝅦</td><td class="fig-sym fig-pause">𝄿</td><td class="fig-nome">Semicolcheia</td><td class="fig-dur">¼ tempo</td></tr>
-        <tr><td class="fig-sym">𝅰</td><td class="fig-sym fig-pause">𝅀</td><td class="fig-nome">Fusa</td><td class="fig-dur">⅛ tempo</td></tr>
+        <!-- Usando SVG inline para garantir renderização em todos os sistemas -->
+        <tr>
+          <td class="fig-sym">
+            <!-- Semibreve: círculo vazio -->
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-label="Semibreve" title="Semibreve">
+              <ellipse cx="11" cy="13" rx="7" ry="5" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+          </td>
+          <td class="fig-sym fig-pause">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-label="Pausa de semibreve" title="Pausa de semibreve">
+              <rect x="5" y="9" width="12" height="5" fill="currentColor" rx="1"/>
+            </svg>
+          </td>
+          <td class="fig-nome">Semibreve</td>
+          <td class="fig-dur">4 tempos</td>
+        </tr>
+        <tr>
+          <td class="fig-sym">
+            <!-- Mínima: cabeça vazia com haste -->
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Mínima" title="Mínima">
+              <ellipse cx="9" cy="20" rx="7" ry="5" stroke="currentColor" stroke-width="2" fill="none" transform="rotate(-15 9 20)"/>
+              <line x1="15" y1="20" x2="15" y2="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </td>
+          <td class="fig-sym fig-pause">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-label="Pausa de mínima" title="Pausa de mínima">
+              <rect x="5" y="8" width="12" height="5" fill="currentColor" rx="1"/>
+              <line x1="5" y1="8" x2="17" y2="8" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </td>
+          <td class="fig-nome">M&iacute;nima</td>
+          <td class="fig-dur">2 tempos</td>
+        </tr>
+        <tr>
+          <td class="fig-sym">
+            <!-- Semínima: cabeça cheia com haste -->
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Semínima" title="Semínima">
+              <ellipse cx="9" cy="20" rx="7" ry="5" fill="currentColor" transform="rotate(-15 9 20)"/>
+              <line x1="15" y1="20" x2="15" y2="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </td>
+          <td class="fig-sym fig-pause">
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Pausa de semínima" title="Pausa de semínima">
+              <path d="M11 5 L16 12 L13 12 L13 22 L10 22 L10 12 L7 12 Z" fill="currentColor"/>
+            </svg>
+          </td>
+          <td class="fig-nome">Sem&iacute;nima</td>
+          <td class="fig-dur">1 tempo</td>
+        </tr>
+        <tr>
+          <td class="fig-sym">
+            <!-- Colcheia: cabeça cheia com haste e bandeira -->
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Colcheia" title="Colcheia">
+              <ellipse cx="9" cy="20" rx="7" ry="5" fill="currentColor" transform="rotate(-15 9 20)"/>
+              <line x1="15" y1="20" x2="15" y2="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M15 3 Q22 8 15 14" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+          </td>
+          <td class="fig-sym fig-pause">
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Pausa de colcheia" title="Pausa de colcheia">
+              <path d="M14 4 Q20 10 14 16 L10 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <circle cx="10" cy="24" r="2" fill="currentColor"/>
+            </svg>
+          </td>
+          <td class="fig-nome">Colcheia</td>
+          <td class="fig-dur">&frac12; tempo</td>
+        </tr>
+        <tr>
+          <td class="fig-sym">
+            <!-- Tercina: 3 colcheias com colchete -->
+            <svg width="48" height="28" viewBox="0 0 48 28" fill="none" aria-label="Tercina" title="Tercina">
+              <ellipse cx="7" cy="20" rx="5" ry="4" fill="currentColor" transform="rotate(-10 7 20)"/>
+              <line x1="11" y1="20" x2="11" y2="5" stroke="currentColor" stroke-width="1.5"/>
+              <ellipse cx="23" cy="20" rx="5" ry="4" fill="currentColor" transform="rotate(-10 23 20)"/>
+              <line x1="27" y1="20" x2="27" y2="5" stroke="currentColor" stroke-width="1.5"/>
+              <ellipse cx="39" cy="20" rx="5" ry="4" fill="currentColor" transform="rotate(-10 39 20)"/>
+              <line x1="43" y1="20" x2="43" y2="5" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="11" y1="5" x2="43" y2="5" stroke="currentColor" stroke-width="1.5"/>
+              <text x="24" y="3" text-anchor="middle" font-size="8" fill="currentColor" font-family="Inter,sans-serif">3</text>
+            </svg>
+          </td>
+          <td class="fig-sym fig-pause">
+            <svg width="48" height="28" viewBox="0 0 48 28" fill="none" aria-label="Pausa de tercina" title="Pausa de tercina">
+              <path d="M12 5 Q18 11 12 17 L8 25" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <circle cx="8" cy="25" r="1.5" fill="currentColor"/>
+              <path d="M24 5 Q30 11 24 17 L20 25" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <circle cx="20" cy="25" r="1.5" fill="currentColor"/>
+              <path d="M36 5 Q42 11 36 17 L32 25" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <circle cx="32" cy="25" r="1.5" fill="currentColor"/>
+              <text x="24" y="3" text-anchor="middle" font-size="8" fill="currentColor" font-family="Inter,sans-serif">3</text>
+            </svg>
+          </td>
+          <td class="fig-nome">Tercina</td>
+          <td class="fig-dur">&frac13; tempo</td>
+        </tr>
+        <tr>
+          <td class="fig-sym">
+            <!-- Semicolcheia: cabeça cheia com 2 bandeiras -->
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Semicolcheia" title="Semicolcheia">
+              <ellipse cx="9" cy="20" rx="7" ry="5" fill="currentColor" transform="rotate(-15 9 20)"/>
+              <line x1="15" y1="20" x2="15" y2="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M15 3 Q22 8 15 11" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M15 8 Q22 13 15 16" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+          </td>
+          <td class="fig-sym fig-pause">
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Pausa de semicolcheia" title="Pausa de semicolcheia">
+              <path d="M14 3 Q20 9 14 14" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <path d="M14 10 Q20 16 14 21 L10 27" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <circle cx="10" cy="27" r="1.8" fill="currentColor"/>
+            </svg>
+          </td>
+          <td class="fig-nome">Semicolcheia</td>
+          <td class="fig-dur">&frac14; tempo</td>
+        </tr>
+        <tr>
+          <td class="fig-sym">
+            <!-- Fusa: cabeça cheia com 3 bandeiras -->
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Fusa" title="Fusa">
+              <ellipse cx="9" cy="20" rx="7" ry="5" fill="currentColor" transform="rotate(-15 9 20)"/>
+              <line x1="15" y1="20" x2="15" y2="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M15 3 Q22 7 15 10" stroke="currentColor" stroke-width="1.8" fill="none"/>
+              <path d="M15 7 Q22 11 15 14" stroke="currentColor" stroke-width="1.8" fill="none"/>
+              <path d="M15 11 Q22 15 15 18" stroke="currentColor" stroke-width="1.8" fill="none"/>
+            </svg>
+          </td>
+          <td class="fig-sym fig-pause">
+            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" aria-label="Pausa de fusa" title="Pausa de fusa">
+              <path d="M14 2 Q20 7 14 12" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              <path d="M14 8 Q20 13 14 18" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              <path d="M14 14 Q20 19 14 24 L11 27" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              <circle cx="11" cy="27" r="1.5" fill="currentColor"/>
+            </svg>
+          </td>
+          <td class="fig-nome">Fusa</td>
+          <td class="fig-dur">&frac18; tempo</td>
+        </tr>
       </tbody>
     </table>
   </section>
 
-</main>
+</div><!-- /.app -->
 <script src="app.js" defer></script>
 </body>
 </html>
